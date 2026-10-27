@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>しゃくれライオン</title><style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#08101e;font-family:system-ui,sans-serif}body{min-height:100dvh}.backdrop{position:fixed;inset:-3%;background:url("title.png") center/cover no-repeat;filter:blur(16px) brightness(.45);transform:scale(1.06)}.artbox{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}.art{position:relative;width:min(100vw,150dvh);aspect-ratio:3/2;max-height:100dvh}.art img{display:block;width:100%;height:100%;object-fit:contain}.hotspot{position:absolute;border:0;background:transparent;cursor:pointer;touch-action:manipulation}.start{left:63%;top:49%;width:33%;height:13%}.settings{left:64%;top:60%;width:31%;height:8%}.ranking{left:64%;top:69%;width:31%;height:8%}.howto{left:64%;top:78%;width:31%;height:8%}.util{position:fixed;z-index:10;top:max(8px,env(safe-area-inset-top));left:max(8px,env(safe-area-inset-left));display:flex;gap:8px}.util button{border:1px solid #fff9;border-radius:10px;background:#142844e8;color:#fff;font-weight:800;padding:8px 10px;font-size:14px}.note{position:fixed;left:50%;bottom:5px;transform:translateX(-50%);color:#fff9;font-size:10px;white-space:nowrap}@media(orientation:portrait) and (max-width:900px){.note{font-size:12px}}
+
+#titleAudioModal{display:none;position:fixed;inset:0;z-index:1000;background:#020817df;align-items:center;justify-content:center;padding:16px;font-family:system-ui,sans-serif;color:#fff}
+#titleAudioModal .card{width:min(92vw,430px);padding:22px;background:linear-gradient(145deg,#172b49,#0b1426);border:2px solid #ffd65a;border-radius:18px;box-shadow:0 12px 45px #000b}
+#titleAudioModal h2{margin:0 0 8px;text-align:center;color:#ffdf72}
+#titleAudioModal p{margin:0 0 18px;text-align:center;color:#c6d6ec;font-size:14px}
+#titleAudioModal label{display:flex;justify-content:space-between;gap:12px;margin:16px 0 8px;font-weight:800}
+#titleAudioModal strong{color:#ffdf72}
+#titleAudioModal input{width:100%;height:32px;accent-color:#ffcf46}
+#titleAudioModal .buttons{display:flex;justify-content:center;gap:8px;margin-top:20px;flex-wrap:wrap}
+#titleAudioModal button{border:0;border-radius:10px;padding:10px 16px;background:linear-gradient(#ffe98b,#ffbf32);color:#35220b;font-weight:900}
+</style></head><body><div class="backdrop"></div><div class="artbox"><div class="art"><img src="title.png" alt="しゃくれライオン タイトル画面"><button class="hotspot start" aria-label="はじめる" title="はじめる" onclick="startGame()"></button><button class="hotspot settings" aria-label="設定" title="設定" onclick="openTitleAudioSettings()"></button><button class="hotspot ranking" aria-label="ランキング" title="ランキング" onclick="location.href='ranking.html'"></button><button class="hotspot howto" aria-label="遊び方" title="遊び方" onclick="alert('左の十字キーで移動、右のボタンでジャンプ・必殺技。横向きで遊んでね！')"></button></div></div><div class="util"><button id="fullscreenButton" onclick="goFullscreen()">⛶ 全画面</button></div><div class="note">画面右側の「はじめる」をタップして冒険スタート</div><script>function goFullscreen(){const e=document.documentElement;if(e.requestFullscreen)e.requestFullscreen().catch(()=>{});if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(()=>{});}function startGame(){try{localStorage.removeItem('shakureLionCarryScore');localStorage.removeItem('shakureLionCarryChin');localStorage.removeItem('shakureLionRetryPenalty')}catch(e){}location.href='stage1.html';}</script>
+<div id="titleAudioModal" onclick="if(event.target===this)this.style.display='none'">
+ <div class="card" role="dialog" aria-modal="true" aria-labelledby="titleAudioHeading">
+  <h2 id="titleAudioHeading">🔊 音量設定</h2><p>BGMと効果音を別々に調整できます。</p>
+  <label for="titleBgmSlider">🎵 BGM <strong id="titleBgmValue">38%</strong></label><input id="titleBgmSlider" type="range" min="0" max="100" value="38">
+  <label for="titleSfxSlider">✨ 効果音（SE） <strong id="titleSfxValue">95%</strong></label><input id="titleSfxSlider" type="range" min="0" max="100" value="95">
+  <div class="buttons"><button type="button" onclick="testTitleSE()">効果音を試聴</button><button type="button" onclick="document.getElementById('titleAudioModal').style.display='none'">閉じる</button></div>
+ </div>
+</div>
+<script>
+function titleReadVol(key,def){try{const v=localStorage.getItem(key);return v===null?def:Math.max(0,Math.min(1,Number(v)||0));}catch(e){return def;}}
+function titleSetVol(bgm,sfx){try{localStorage.setItem('shakureLionBgmVolume',String(bgm));localStorage.setItem('shakureLionSfxVolume',String(sfx));}catch(e){}}
+function openTitleAudioSettings(){
+ const b=titleReadVol('shakureLionBgmVolume',.38),s=titleReadVol('shakureLionSfxVolume',.95);
+ document.getElementById('titleBgmSlider').value=Math.round(b*100);document.getElementById('titleSfxSlider').value=Math.round(s*100);
+ document.getElementById('titleBgmValue').textContent=Math.round(b*100)+'%';document.getElementById('titleSfxValue').textContent=Math.round(s*100)+'%';
+ document.getElementById('titleAudioModal').style.display='flex';
+}
+document.getElementById('titleBgmSlider').addEventListener('input',function(){const v=Number(this.value);document.getElementById('titleBgmValue').textContent=v+'%';titleSetVol(v/100,titleReadVol('shakureLionSfxVolume',.95));});
+document.getElementById('titleSfxSlider').addEventListener('input',function(){const v=Number(this.value);document.getElementById('titleSfxValue').textContent=v+'%';titleSetVol(titleReadVol('shakureLionBgmVolume',.38),v/100);});
+function testTitleSE(){
+ try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;const ac=new AC();const master=ac.createGain();master.gain.value=titleReadVol('shakureLionSfxVolume',.95);master.connect(ac.destination);if(ac.state==='suspended')ac.resume();[988,1318,1568].forEach((freq,i)=>{const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime+i*.09;o.type='square';o.frequency.value=freq;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.3,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+.1);o.connect(g);g.connect(master);o.start(t);o.stop(t+.12);});setTimeout(()=>ac.close().catch(()=>{}),800);}catch(e){}
+}
+</script>
+</body></html>
